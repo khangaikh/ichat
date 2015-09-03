@@ -1,7 +1,9 @@
 <?php
     require_once "config.php";
-    
-    $response ="";
+    require_once "key.php";
+
+    class Result {}
+    $response = new Result();
     //$date = null;
     try {
         $stmt = $db->prepare("SELECT * FROM users WHERE email=:email AND password=:password");
@@ -17,13 +19,14 @@
     }
     if(count($results)>0){
         session_start();
+        openssl_public_encrypt($_POST['password'], $encrypted, $pubKey);
         $_SESSION['user'] = $_POST['email'];
-        $response = 'OK';
+        $_SESSION['key'] = $pubKey;
+        //$_SESSION['secret'] = $encrypted;
+        $response->message = 1;
     }else{
-        $response = $_POST['email'];
+        $response->message = 0;
     }
     
-    
-
-    echo $response;
+    echo json_encode($response); 
 ?>

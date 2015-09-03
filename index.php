@@ -2,6 +2,8 @@
     require_once 'includes/Twig/Autoloader.php';
     require_once "config.php";
 
+    echo json_encode($_SESSION);
+    
     $stmt = $db->prepare("SELECT * FROM zarlal");
     $stmt->execute();
     $result = $stmt->fetchAll();
@@ -54,33 +56,19 @@
         if($_GET['cid']==0){
             $template = $twig->loadTemplate('login.html');
             echo $template->render(array('title' => 'iChat-Login'));
-        }else if($_GET['cid']==1){
-            $_SESSION = array();
-            // If it's desired to kill the session, also delete the session cookie.
-            // Note: This will destroy the session, and not just the session data!
-            if (ini_get("session.use_cookies")) {
-                $params = session_get_cookie_params();
-                setcookie(session_name(), '', time() - 42000,
-                    $params["path"], $params["domain"],
-                    $params["secure"], $params["httponly"]
-                );
-            }
-            session_destroy();
-            $template = $twig->loadTemplate('login.html');
-            echo $template->render(array('title' => 'iChat-Login'));
         }
     }else{
         if($_SESSION){
             if($_SESSION['user']){
                 $user = $_SESSION['user'];
+
                 echo $template->render(array('title' => 'iChat','categories'=>$categories,'zars'=>$events,'num' =>$num, 'user'=>$user));
             }else{
                 $template = $twig->loadTemplate('login.html');
                 echo $template->render(array('title' => 'iChat-Login'));}
         }
         else{
-             $template = $twig->loadTemplate('login.html');
-            echo $template->render(array('title' => 'iChat-Login'));
+            echo $template->render(array('title' => 'iChat','categories'=>$categories,'zars'=>$events,'num' =>$num, 'user'=>null));
         }
     }
 ?>
